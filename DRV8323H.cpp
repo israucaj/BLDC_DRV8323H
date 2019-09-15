@@ -5,13 +5,13 @@ Date: September 2019
 
 #include "DRV8323H.h"
 
-BLDC::BLDC(uint8_t inh_pins[3], uint8_t inl_pins[3], uint8_t so_pins[3], uint8_t nfault_pin, uint8_t en_pin, uint8_t cal_pin)
+BLDC::BLDC(uint8_t inh_pins[3], uint8_t inl_pins[3], uint8_t sensor_pins[3], uint8_t nfault_pin, uint8_t en_pin, uint8_t cal_pin)
 {
 	for (uint8_t i = 0; i < 3; i++)
 	{
 		_inh_pins[i] = inh_pins[i];
 		_inl_pins[i] = inl_pins[i];
-		_so_pins[i] = so_pins[i];
+		_sensor_pins[i] = sensor_pins[i];
 	}
 	_nfault_pin = nfault_pin;
 	pinMode(_nfault_pin, INPUT);
@@ -209,4 +209,11 @@ void BLDC::doSequence(bool sensor_a, bool sensor_b, bool sensor_c, bool directio
 		setFloat(C);
 		break;
 	}
+}
+
+void BLDC::readSensors()
+{
+	sens_a = digitalRead(_sensor_pins[0]);
+	sens_b = digitalRead(_sensor_pins[1]);
+	sens_c = digitalRead(_sensor_pins[2]);
 }
