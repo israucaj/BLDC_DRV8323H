@@ -1,6 +1,7 @@
-/* DRV8323H BLDC Driver for Arduino ESP32
-Author: Israel Cayetano
-Date: September 2019
+/* 
+	DRV8323H BLDC Driver for Arduino ESP32
+	Date: September 2019
+	Author: Israel Cayetano
 */
 
 #ifndef _DRV8323H_h
@@ -32,12 +33,12 @@ Date: September 2019
 class BLDC
 {
 public:
-	BLDC(uint8_t inh_pins[3], uint8_t inl_pins[3], uint8_t so_pins[3],  uint8_t nfault_pin, uint8_t en_pin, uint8_t cal_pin );
+	BLDC(uint8_t inh_pins[3], uint8_t inl_pins[3], uint8_t so_pins[3],  uint8_t nfault_pin, uint8_t en_pin);
 	~BLDC();
 	PWM pwmA;
 	PWM pwmB;
 	PWM pwmC;
-	void begin(uint8_t mode, uint8_t channels[3], double frequency);
+	void begin(uint8_t channels[3], double frequency);
 	void doSequence(bool sensor_a, bool sensor_b, bool sensor_c, bool direction, float duty_cycle);
 	void setCoast();
 	void setBrake();
@@ -56,8 +57,6 @@ protected:
 	uint8_t _sensor_pins[3];
 	uint8_t _nfault_pin;
 	uint8_t _en_pin;
-	uint8_t _cal_pin;
-	uint8_t _mode;
 	uint8_t _step;
 };
 

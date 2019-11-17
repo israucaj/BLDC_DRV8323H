@@ -1,11 +1,12 @@
-/* DRV8323H BLDC Driver for Arduino ESP32
-Author: Israel Cayetano
-Date: September 2019
+/* 
+	DRV8323H BLDC Driver for Arduino ESP32
+	Date: September 2019
+	Author: Israel Cayetano
 */
 
 #include "DRV8323H.h"
 
-BLDC::BLDC(uint8_t inh_pins[3], uint8_t inl_pins[3], uint8_t sensor_pins[3], uint8_t nfault_pin, uint8_t en_pin, uint8_t cal_pin)
+BLDC::BLDC(uint8_t inh_pins[3], uint8_t inl_pins[3], uint8_t sensor_pins[3], uint8_t nfault_pin, uint8_t en_pin)
 {
 	for (uint8_t i = 0; i < 3; i++)
 	{
@@ -15,8 +16,6 @@ BLDC::BLDC(uint8_t inh_pins[3], uint8_t inl_pins[3], uint8_t sensor_pins[3], uin
 	}
 	_nfault_pin = nfault_pin;
 	pinMode(_nfault_pin, INPUT);
-	_cal_pin = cal_pin;
-	pinMode(_cal_pin, OUTPUT);
 	_en_pin = en_pin;
 	pinMode(_en_pin, OUTPUT);
 	digitalWrite(_en_pin, HIGH);
@@ -26,15 +25,14 @@ BLDC::~BLDC()
 {
 }
 
-void BLDC::begin(uint8_t mode, uint8_t channels[3], double frequency)
+void BLDC::begin(uint8_t channels[3], double frequency)
 {
-	_mode = mode;
 	digitalWrite(_en_pin, LOW);
-	pwmA.setup(_inh_pins[0], channels[0], frequency, 10);
+	pwmA.setup(_inh_pins[0], channels[0], frequency, 10, HIGH);
 	pwmA.attachPin(_inl_pins[0]);
-	pwmB.setup(_inh_pins[1], channels[1], frequency, 10);
+	pwmB.setup(_inh_pins[1], channels[1], frequency, 10, HIGH);
 	pwmB.attachPin(_inl_pins[1]);
-	pwmC.setup(_inh_pins[2], channels[2], frequency, 10);
+	pwmC.setup(_inh_pins[2], channels[2], frequency, 10, HIGH);
 	pwmC.attachPin(_inl_pins[2]);
 	setCoast();
 }
@@ -45,15 +43,15 @@ void BLDC::setHigh(uint8_t coil,float duty_cycle)
 	{
 	case A:
 		GPIO.func_out_sel_cfg[_inl_pins[0]].inv_sel = 1;
-		pwmA.setPWM(duty_cycle);
+		pwmA.setDuty(duty_cycle);
 		break;
 	case B:
 		GPIO.func_out_sel_cfg[_inl_pins[1]].inv_sel = 1;
-		pwmB.setPWM(duty_cycle);
+		pwmB.setDuty(duty_cycle);
 		break;
 	case C:
 		GPIO.func_out_sel_cfg[_inl_pins[2]].inv_sel = 1;
-		pwmC.setPWM(duty_cycle);
+		pwmC.setDuty(duty_cycle);
 		break;
 	default:
 		break;
@@ -66,15 +64,15 @@ void BLDC::setLow(uint8_t coil)
 	{
 	case A:
 		GPIO.func_out_sel_cfg[_inl_pins[0]].inv_sel = 1;
-		pwmA.setPWM(0);
+		pwmA.setDuty(0);
 		break;
 	case B:
 		GPIO.func_out_sel_cfg[_inl_pins[1]].inv_sel = 1;
-		pwmB.setPWM(0);
+		pwmB.setDuty(0);
 		break;
 	case C:
 		GPIO.func_out_sel_cfg[_inl_pins[2]].inv_sel = 1;
-		pwmC.setPWM(0);
+		pwmC.setDuty(0);
 		break;
 	default:
 		break;
@@ -87,15 +85,15 @@ void BLDC::setFloat(uint8_t coil)
 	{
 	case A:
 		GPIO.func_out_sel_cfg[_inl_pins[0]].inv_sel = 0;
-		pwmA.setPWM(0);
+		pwmA.setDuty(0);
 		break;
 	case B:
 		GPIO.func_out_sel_cfg[_inl_pins[1]].inv_sel = 0;
-		pwmB.setPWM(0);
+		pwmB.setDuty(0);
 		break;
 	case C:
 		GPIO.func_out_sel_cfg[_inl_pins[2]].inv_sel = 0;
-		pwmC.setPWM(0);
+		pwmC.setDuty(0);
 		break;
 	default:
 		break;
@@ -119,7 +117,7 @@ void BLDC::setBrake()
 void BLDC::align()
 {
 	GPIO.func_out_sel_cfg[_inl_pins[0]].inv_sel = 1;
-	pwmA.setPWM(10);
+	pwmA.setDuty(10);
 	setLow(B);
 	setLow(C);
 }
