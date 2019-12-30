@@ -1,4 +1,4 @@
-/* 
+/*
 	DRV8323H BLDC Driver for Arduino ESP32
 	Date: September 2019
 	Author: Israel Cayetano
@@ -15,8 +15,8 @@ BLDC::BLDC(uint8_t inh_pins[3], uint8_t inl_pins[3], uint8_t sensor_pins[3], uin
 		_sensor_pins[i] = sensor_pins[i];
 	}
 	_nfault_pin = nfault_pin;
-	pinMode(_nfault_pin, INPUT);
 	_en_pin = en_pin;
+	pinMode(_nfault_pin, INPUT);
 	pinMode(_en_pin, OUTPUT);
 	digitalWrite(_en_pin, HIGH);
 }
@@ -37,7 +37,7 @@ void BLDC::begin(uint8_t channels[3], double frequency)
 	setCoast();
 }
 
-void BLDC::setHigh(uint8_t coil,float duty_cycle)
+void BLDC::setHigh(uint8_t coil, float duty_cycle)
 {
 	switch (coil)
 	{
@@ -124,7 +124,7 @@ void BLDC::align()
 
 uint8_t BLDC::getStep(bool sensor_a, bool sensor_b, bool sensor_c, bool direction)
 {
-	uint8_t step;
+	uint8_t step			= 0;
 	uint8_t sensor_sequence = 0;
 	bitWrite(sensor_sequence, 2, sensor_a);
 	bitWrite(sensor_sequence, 1, sensor_b);
@@ -133,7 +133,7 @@ uint8_t BLDC::getStep(bool sensor_a, bool sensor_b, bool sensor_c, bool directio
 	{
 	case 1:
 		if (direction == FORWARD)
-			step = CB ;
+			step = CB;
 		else
 			step = BC;
 		break;
@@ -166,6 +166,9 @@ uint8_t BLDC::getStep(bool sensor_a, bool sensor_b, bool sensor_c, bool directio
 			step = BC;
 		else
 			step = CB;
+		break;
+	default:
+		// No coil active, could be a sensor's hardware failure. Check individual coil signals.
 		break;
 	}
 	return step;
@@ -205,6 +208,8 @@ void BLDC::doSequence(bool sensor_a, bool sensor_b, bool sensor_c, bool directio
 		setLow(A);
 		setHigh(B, duty_cycle);
 		setFloat(C);
+		break;
+	default:
 		break;
 	}
 }

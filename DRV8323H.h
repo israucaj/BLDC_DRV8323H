@@ -13,7 +13,7 @@
 	#include "WProgram.h"
 #endif
 
-#include <PWM_ESP32.h>
+#include "PWM_ESP32.h"
 
 #define PWM_6 0
 #define PWM_3 1
