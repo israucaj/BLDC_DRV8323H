@@ -14,6 +14,7 @@
 #endif
 
 #include "PWM_ESP32.h"
+#include "Module.h"
 
 #define PWM_6 0
 #define PWM_3 1
@@ -40,15 +41,16 @@ public:
 	PWM pwmC;
 	void begin(uint8_t channels[3], double frequency);
 	void doSequence(bool sensor_a, bool sensor_b, bool sensor_c, bool direction, float duty_cycle);
-	void setCoast();
-	void setBrake();
+	void setCoast(void);
+	void setBrake(void);
 	void setHigh(uint8_t coil, float duty_cycle);
 	void setLow(uint8_t coil);
 	void setFloat(uint8_t coil);
-	void readSensors();
+	void readSensors(void);
 	bool sens_a;
 	bool sens_b;
 	bool sens_c;
+	static moduleDesc_S DRV_desc; 
 protected:
 	void align();
 	uint8_t getStep(bool sensor_a, bool sensor_b, bool sensor_c, bool direction);

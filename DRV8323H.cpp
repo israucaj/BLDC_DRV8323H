@@ -220,3 +220,13 @@ void BLDC::readSensors()
 	sens_b = digitalRead(_sensor_pins[1]);
 	sens_c = digitalRead(_sensor_pins[2]);
 }
+
+static void periodic100Hz_CLK(void)
+{
+	
+}
+
+moduleDesc_S BLDC::DRV_desc = {
+	&periodic100Hz_CLK,
+};
+
