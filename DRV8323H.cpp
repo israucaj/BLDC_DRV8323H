@@ -6,7 +6,7 @@
 
 #include "DRV8323H.h"
 
-BLDC::BLDC(uint8_t inh_pins[3], uint8_t inl_pins[3], uint8_t sensor_pins[3], uint8_t nfault_pin, uint8_t en_pin)
+BLDC::BLDC(const uint8_t inh_pins[3], const uint8_t inl_pins[3], const uint8_t sensor_pins[3], uint8_t nfault_pin, uint8_t en_pin)
 {
 	for (uint8_t i = 0; i < 3; i++)
 	{
@@ -28,12 +28,17 @@ BLDC::~BLDC()
 void BLDC::begin(uint8_t channels[3], double frequency)
 {
 	digitalWrite(_en_pin, LOW);
-	pwmA.setup(_inh_pins[0], channels[0], frequency, 10, HIGH);
-	pwmA.attachPin(_inl_pins[0]);
-	pwmB.setup(_inh_pins[1], channels[1], frequency, 10, HIGH);
-	pwmB.attachPin(_inl_pins[1]);
-	pwmC.setup(_inh_pins[2], channels[2], frequency, 10, HIGH);
-	pwmC.attachPin(_inl_pins[2]);
+	pwmA.setup(_inh_pins[A], channels[0], frequency, 10, HIGH);
+	pwmA.attachPin(_inl_pins[A]);
+	pwmB.setup(_inh_pins[B], channels[1], frequency, 10, HIGH);
+	pwmB.attachPin(_inl_pins[B]);
+	pwmC.setup(_inh_pins[C], channels[2], frequency, 10, HIGH);
+	pwmC.attachPin(_inl_pins[C]);
+	
+	encA.begin(_sensor_pins[A], CHANGE, 100);
+	encB.begin(_sensor_pins[B], CHANGE, 100);
+	encC.begin(_sensor_pins[C], CHANGE, 100);
+
 	setCoast();
 }
 
@@ -42,15 +47,15 @@ void BLDC::setHigh(uint8_t coil, float duty_cycle)
 	switch (coil)
 	{
 	case A:
-		GPIO.func_out_sel_cfg[_inl_pins[0]].inv_sel = 1;
+		GPIO.func_out_sel_cfg[_inl_pins[A]].inv_sel = 1;
 		pwmA.setDuty(duty_cycle);
 		break;
 	case B:
-		GPIO.func_out_sel_cfg[_inl_pins[1]].inv_sel = 1;
+		GPIO.func_out_sel_cfg[_inl_pins[B]].inv_sel = 1;
 		pwmB.setDuty(duty_cycle);
 		break;
 	case C:
-		GPIO.func_out_sel_cfg[_inl_pins[2]].inv_sel = 1;
+		GPIO.func_out_sel_cfg[_inl_pins[C]].inv_sel = 1;
 		pwmC.setDuty(duty_cycle);
 		break;
 	default:
@@ -63,15 +68,15 @@ void BLDC::setLow(uint8_t coil)
 	switch (coil)
 	{
 	case A:
-		GPIO.func_out_sel_cfg[_inl_pins[0]].inv_sel = 1;
+		GPIO.func_out_sel_cfg[_inl_pins[A]].inv_sel = 1;
 		pwmA.setDuty(0);
 		break;
 	case B:
-		GPIO.func_out_sel_cfg[_inl_pins[1]].inv_sel = 1;
+		GPIO.func_out_sel_cfg[_inl_pins[B]].inv_sel = 1;
 		pwmB.setDuty(0);
 		break;
 	case C:
-		GPIO.func_out_sel_cfg[_inl_pins[2]].inv_sel = 1;
+		GPIO.func_out_sel_cfg[_inl_pins[C]].inv_sel = 1;
 		pwmC.setDuty(0);
 		break;
 	default:
@@ -84,15 +89,15 @@ void BLDC::setFloat(uint8_t coil)
 	switch (coil)
 	{
 	case A:
-		GPIO.func_out_sel_cfg[_inl_pins[0]].inv_sel = 0;
+		GPIO.func_out_sel_cfg[_inl_pins[A]].inv_sel = 0;
 		pwmA.setDuty(0);
 		break;
 	case B:
-		GPIO.func_out_sel_cfg[_inl_pins[1]].inv_sel = 0;
+		GPIO.func_out_sel_cfg[_inl_pins[B]].inv_sel = 0;
 		pwmB.setDuty(0);
 		break;
 	case C:
-		GPIO.func_out_sel_cfg[_inl_pins[2]].inv_sel = 0;
+		GPIO.func_out_sel_cfg[_inl_pins[C]].inv_sel = 0;
 		pwmC.setDuty(0);
 		break;
 	default:
@@ -116,7 +121,7 @@ void BLDC::setBrake()
 
 void BLDC::align()
 {
-	GPIO.func_out_sel_cfg[_inl_pins[0]].inv_sel = 1;
+	GPIO.func_out_sel_cfg[_inl_pins[A]].inv_sel = 1;
 	pwmA.setDuty(10);
 	setLow(B);
 	setLow(C);
@@ -216,9 +221,9 @@ void BLDC::doSequence(bool sensor_a, bool sensor_b, bool sensor_c, bool directio
 
 void BLDC::readSensors()
 {
-	sens_a = digitalRead(_sensor_pins[0]);
-	sens_b = digitalRead(_sensor_pins[1]);
-	sens_c = digitalRead(_sensor_pins[2]);
+	sens_a = digitalRead(_sensor_pins[A]);
+	sens_b = digitalRead(_sensor_pins[B]);
+	sens_c = digitalRead(_sensor_pins[C]);
 }
 
 static void periodic100Hz_CLK(void)
