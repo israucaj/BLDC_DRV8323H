@@ -55,7 +55,7 @@
 class BLDC
 {
 public:
-	BLDC(const uint8_t inh_pins[3], const uint8_t inl_pins[3], const uint8_t so_pins[3],  uint8_t nfault_pin, uint8_t en_pin);
+	BLDC(const uint8_t inh_pins[3], const uint8_t inl_pins[3], const uint8_t so_pins[3],  uint8_t nfault_pin);
 	~BLDC();
 	PWM pwmA;
 	PWM pwmB;
@@ -64,7 +64,7 @@ public:
 	ExternalInterrupt encB;
 	ExternalInterrupt encC;
 	void begin(uint8_t channels[3], double frequency);
-	void doSequence(bool sensor_a, bool sensor_b, bool sensor_c, bool direction, float duty_cycle);
+	void doSequence(bool direction, float duty_cycle);
 	void setCoast(void);
 	void setBrake(void);
 	void setHigh(uint8_t coil, float duty_cycle);

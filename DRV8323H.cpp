@@ -6,7 +6,7 @@
 
 #include "DRV8323H.h"
 
-BLDC::BLDC(const uint8_t inh_pins[3], const uint8_t inl_pins[3], const uint8_t sensor_pins[3], uint8_t nfault_pin, uint8_t en_pin)
+BLDC::BLDC(const uint8_t inh_pins[3], const uint8_t inl_pins[3], const uint8_t sensor_pins[3], uint8_t nfault_pin)
 {
 	for (uint8_t i = 0; i < 3; i++)
 	{
@@ -15,13 +15,12 @@ BLDC::BLDC(const uint8_t inh_pins[3], const uint8_t inl_pins[3], const uint8_t s
 		_sensor_pins[i] = sensor_pins[i];
 	}
 	_nfault_pin = nfault_pin;
-	_en_pin = en_pin;
 	pinMode(_nfault_pin, INPUT);
 	pinMode(_en_pin, OUTPUT);
 	digitalWrite(_en_pin, HIGH);
 }
 
-BLDC::~BLDC()
+BLDC::~BLDC(void)
 {
 }
 
@@ -105,21 +104,21 @@ void BLDC::setFloat(uint8_t coil)
 	}
 }
 
-void BLDC::setCoast()
+void BLDC::setCoast(void)
 {
 	setFloat(A);
 	setFloat(B);
 	setFloat(C);
 }
 
-void BLDC::setBrake()
+void BLDC::setBrake(void)
 {
 	setLow(A);
 	setLow(B);
 	setLow(C);
 }
 
-void BLDC::align()
+void BLDC::align(void)
 {
 	GPIO.func_out_sel_cfg[_inl_pins[A]].inv_sel = 1;
 	pwmA.setDuty(10);
@@ -179,9 +178,9 @@ uint8_t BLDC::getStep(bool sensor_a, bool sensor_b, bool sensor_c, bool directio
 	return step;
 }
 
-void BLDC::doSequence(bool sensor_a, bool sensor_b, bool sensor_c, bool direction, float duty_cycle)
+void BLDC::doSequence(bool direction, float duty_cycle)
 {
-	_step = getStep(sensor_a, sensor_b, sensor_c, direction);
+	_step = getStep(encA.getState(), encB.getState(), encC.getState(), direction);
 	switch (_step)
 	{
 	case BC:
@@ -219,7 +218,7 @@ void BLDC::doSequence(bool sensor_a, bool sensor_b, bool sensor_c, bool directio
 	}
 }
 
-void BLDC::readSensors()
+void BLDC::readSensors(void)
 {
 	sens_a = digitalRead(_sensor_pins[A]);
 	sens_b = digitalRead(_sensor_pins[B]);
