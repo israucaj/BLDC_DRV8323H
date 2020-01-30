@@ -33,7 +33,7 @@
 class BLDC
 {
 public:
-	BLDC(uint8_t inh_pins[3], uint8_t inl_pins[3], uint8_t so_pins[3],  uint8_t nfault_pin, uint8_t en_pin);
+	BLDC(uint8_t inh_pins[3], uint8_t inl_pins[3], uint8_t sensor_pins[3]);
 	~BLDC();
 	PWM pwmA;
 	PWM pwmB;
@@ -55,8 +55,6 @@ protected:
 	uint8_t _inh_pins[3];
 	uint8_t _inl_pins[3];
 	uint8_t _sensor_pins[3];
-	uint8_t _nfault_pin;
-	uint8_t _en_pin;
 	uint8_t _step;
 };
 
