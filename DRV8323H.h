@@ -55,7 +55,7 @@
 class BLDC
 {
 public:
-	BLDC(const uint8_t inh_pins[3], const uint8_t inl_pins[3], const uint8_t so_pins[3],  uint8_t nfault_pin);
+	BLDC(const uint8_t inh_pins[3], const uint8_t inl_pins[3], const uint8_t sensor_pins[3]);
 	~BLDC();
 	PWM pwmA;
 	PWM pwmB;

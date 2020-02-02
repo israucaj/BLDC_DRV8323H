@@ -6,7 +6,7 @@
 
 #include "DRV8323H.h"
 
-BLDC::BLDC(const uint8_t inh_pins[3], const uint8_t inl_pins[3], const uint8_t sensor_pins[3], uint8_t nfault_pin)
+BLDC::BLDC(const uint8_t inh_pins[3], const uint8_t inl_pins[3], const uint8_t sensor_pins[3])
 {
 	for (uint8_t i = 0; i < 3; i++)
 	{
@@ -14,10 +14,6 @@ BLDC::BLDC(const uint8_t inh_pins[3], const uint8_t inl_pins[3], const uint8_t s
 		_inl_pins[i] = inl_pins[i];
 		_sensor_pins[i] = sensor_pins[i];
 	}
-	_nfault_pin = nfault_pin;
-	pinMode(_nfault_pin, INPUT);
-	pinMode(_en_pin, OUTPUT);
-	digitalWrite(_en_pin, HIGH);
 }
 
 BLDC::~BLDC(void)
@@ -26,7 +22,6 @@ BLDC::~BLDC(void)
 
 void BLDC::begin(uint8_t channels[3], double frequency)
 {
-	digitalWrite(_en_pin, LOW);
 	pwmA.setup(_inh_pins[A], channels[0], frequency, 10, HIGH);
 	pwmA.attachPin(_inl_pins[A]);
 	pwmB.setup(_inh_pins[B], channels[1], frequency, 10, HIGH);
@@ -67,16 +62,22 @@ void BLDC::setLow(uint8_t coil)
 	switch (coil)
 	{
 	case A:
-		GPIO.func_out_sel_cfg[_inl_pins[A]].inv_sel = 1;
+		//GPIO.func_out_sel_cfg[_inl_pins[A]].inv_sel = 1;
 		pwmA.setDuty(0);
+		digitalWrite(_inh_pins[A], HIGH);
+		digitalWrite(_inl_pins[A], LOW);
 		break;
 	case B:
-		GPIO.func_out_sel_cfg[_inl_pins[B]].inv_sel = 1;
+		//GPIO.func_out_sel_cfg[_inl_pins[B]].inv_sel = 1;
 		pwmB.setDuty(0);
+		digitalWrite(_inh_pins[B], HIGH);
+		digitalWrite(_inl_pins[B], LOW);
 		break;
 	case C:
-		GPIO.func_out_sel_cfg[_inl_pins[C]].inv_sel = 1;
+		//GPIO.func_out_sel_cfg[_inl_pins[C]].inv_sel = 1;
 		pwmC.setDuty(0);
+		digitalWrite(_inh_pins[C], HIGH);
+		digitalWrite(_inl_pins[C], LOW);
 		break;
 	default:
 		break;
